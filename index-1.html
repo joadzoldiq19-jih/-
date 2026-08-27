@@ -1,0 +1,935 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>أنس فاطمة</title>
+<meta name="description" content="أنس فاطمة — متابعة الأذكار والأدعية اليومية">
+<meta property="og:title" content="أنس فاطمة">
+<meta property="og:description" content="متابعة الأذكار والأدعية اليومية">
+<link rel="manifest" href="manifest.json">
+<meta name="theme-color" content="#1F1B2E">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="أنس فاطمة">
+<link rel="icon" href="icon-192.png">
+<link rel="apple-touch-icon" href="apple-touch-icon.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Aref+Ruqaa:wght@400;700&family=Tajawal:wght@300;400;500;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg:#1F1B2E;
+    --surface:#2A2440;
+    --surface-2:#332C4D;
+    --amber:#D9A441;
+    --amber-dim:#8A6A2E;
+    --sage:#8FAE8B;
+    --text:#F2E9DC;
+    --text-dim:#B6ADC7;
+    --danger:#C97B6B;
+    --ring-track:#3A3355;
+  }
+  *{box-sizing:border-box; -webkit-tap-highlight-color:transparent;}
+  html,body{margin:0; padding:0; background:var(--bg); color:var(--text); font-family:'Tajawal',sans-serif; min-height:100vh;}
+  body{padding-bottom:96px;}
+  h1,h2,h3,.display{font-family:'Aref Ruqaa',serif;}
+
+  header{padding:26px 20px 10px; text-align:center; position:relative;}
+  header .title{font-size:38px; color:var(--amber); margin:0; letter-spacing:1px; text-shadow:0 0 24px rgba(217,164,65,0.35);}
+  header .subtitle{color:var(--text-dim); font-size:13.5px; margin-top:4px;}
+  .icon-btn{
+    background:var(--surface); border:1px solid var(--surface-2); color:var(--text);
+    width:38px; height:38px; border-radius:50%; display:flex; align-items:center; justify-content:center;
+    font-size:17px; cursor:pointer;
+  }
+  .icon-btn:active{transform:scale(0.92);}
+  .about-btn{position:absolute; top:22px; right:16px;}
+
+  main{max-width:520px; margin:0 auto; padding:0 16px;}
+
+  .sort-bar{display:flex; align-items:center; justify-content:space-between; padding:14px 16px 12px; max-width:520px; margin:0 auto;}
+  .sort-btn{
+    display:flex; align-items:center; gap:6px; background:var(--surface); border:1px solid var(--surface-2);
+    color:var(--text-dim); padding:8px 14px; border-radius:20px; font-family:'Tajawal'; font-size:13px; cursor:pointer;
+  }
+  .sort-btn:active{transform:scale(0.96);}
+  .count-pill{color:var(--text-dim); font-size:13px;}
+
+  .empty-state{text-align:center; padding:60px 20px; color:var(--text-dim);}
+  .empty-state .glyph{font-size:56px; display:block; margin-bottom:12px; opacity:0.8;}
+  .empty-state .display{font-size:24px; color:var(--amber); margin-bottom:6px;}
+
+  .card{
+    background:linear-gradient(160deg, var(--surface), var(--surface-2)); border-radius:20px; padding:16px; margin-bottom:14px;
+    display:flex; align-items:center; gap:14px; position:relative; box-shadow:0 6px 18px rgba(0,0,0,0.25); border:1px solid rgba(255,255,255,0.04);
+  }
+  .card.done-today{box-shadow:0 6px 22px rgba(217,164,65,0.18), 0 0 0 1px rgba(217,164,65,0.25) inset;}
+  .card.achieved{background:linear-gradient(160deg, #2F3A2E, #263528);}
+
+  .ring-wrap{position:relative; width:66px; height:66px; flex-shrink:0; cursor:pointer;}
+  .ring-wrap svg circle:last-child{transform:rotate(-90deg); transform-origin:50% 50%;}
+  .ring-icon{position:absolute; inset:0; display:flex; align-items:center; justify-content:center; font-size:26px;}
+
+  .card-body{flex:1; min-width:0; cursor:pointer;}
+  .card-name{font-size:17px; font-weight:700; margin:0 0 2px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;}
+  .card-meta{display:flex; gap:8px; flex-wrap:wrap; font-size:12.5px; color:var(--text-dim);}
+  .card-meta .streak{color:var(--amber);}
+  .card-meta .remaining{color:var(--sage);}
+  .card-meta .freq-pill{background:rgba(255,255,255,0.06); padding:1px 8px; border-radius:10px;}
+
+  .done-btn{
+    width:44px; height:44px; border-radius:50%; border:2px solid var(--amber-dim); background:transparent; color:var(--amber);
+    font-size:20px; display:flex; align-items:center; justify-content:center; cursor:pointer; transition:all .15s; flex-shrink:0;
+  }
+  .done-btn.checked{background:var(--amber); color:#1F1B2E; border-color:var(--amber);}
+  .done-btn.not-due{opacity:0.35;}
+  .done-btn:active{transform:scale(0.9);}
+
+  .badge-achieved{position:absolute; top:-8px; right:14px; background:var(--sage); color:#1F2A1E; font-size:11px; padding:3px 10px; border-radius:12px; font-weight:700;}
+
+  .fab{
+    position:fixed; bottom:24px; left:50%; transform:translateX(-50%); background:var(--amber); color:#1F1B2E; border:none;
+    width:60px; height:60px; border-radius:50%; font-size:30px; box-shadow:0 8px 24px rgba(217,164,65,0.4); cursor:pointer;
+    display:flex; align-items:center; justify-content:center; z-index:50;
+  }
+  .fab:active{transform:translateX(-50%) scale(0.92);}
+
+  .sheet-backdrop{position:fixed; inset:0; background:rgba(0,0,0,0.55); display:none; align-items:flex-end; z-index:100;}
+  .sheet-backdrop.open{display:flex;}
+  .sheet{
+    background:var(--bg); width:100%; max-width:520px; margin:0 auto; border-radius:24px 24px 0 0; padding:20px 20px 28px;
+    max-height:88vh; overflow-y:auto; animation:slideUp .22s ease-out;
+  }
+  @keyframes slideUp{from{transform:translateY(30px); opacity:0;} to{transform:translateY(0); opacity:1;}}
+  .sheet-handle{width:40px; height:4px; background:var(--surface-2); border-radius:2px; margin:0 auto 16px;}
+  .sheet h2{color:var(--amber); font-size:24px; margin:0 0 16px; text-align:center;}
+  label{font-size:13px; color:var(--text-dim); display:block; margin:14px 0 6px;}
+  input[type=text], input[type=number], input[type=time], select, textarea{
+    width:100%; background:var(--surface); border:1px solid var(--surface-2); color:var(--text);
+    padding:12px 14px; border-radius:12px; font-family:'Tajawal'; font-size:15px;
+  }
+  textarea{resize:vertical; min-height:64px; line-height:1.7;}
+  select{appearance:none; -webkit-appearance:none;}
+  input:focus, select:focus, textarea:focus{outline:2px solid var(--amber-dim);}
+
+  .seg{display:flex; gap:8px; margin-top:6px;}
+  .seg-btn{
+    flex:1; text-align:center; background:var(--surface); border:2px solid var(--surface-2);
+    color:var(--text-dim); padding:10px 6px; border-radius:12px; font-family:'Tajawal'; font-size:13px; cursor:pointer;
+  }
+  .seg-btn.selected{border-color:var(--amber); background:var(--surface-2); color:var(--text);}
+
+  .icon-grid{display:grid; grid-template-columns:repeat(6, 1fr); gap:8px; margin-top:6px;}
+  .icon-opt{
+    aspect-ratio:1; background:var(--surface); border:2px solid var(--surface-2); border-radius:12px;
+    display:flex; align-items:center; justify-content:center; font-size:22px; cursor:pointer;
+  }
+  .icon-opt.selected{border-color:var(--amber); background:var(--surface-2);}
+
+  .sheet-save{
+    width:100%; background:var(--amber); color:#1F1B2E; border:none; padding:14px; border-radius:14px;
+    font-family:'Tajawal'; font-weight:700; font-size:16px; margin-top:22px; cursor:pointer;
+  }
+  .sheet-cancel{width:100%; background:none; color:var(--text-dim); border:none; padding:10px; font-size:14px; margin-top:6px; cursor:pointer;}
+  .toast{
+    position:fixed; top:20px; left:50%; transform:translateX(-50%); background:var(--sage); color:#1F2A1E;
+    padding:10px 20px; border-radius:20px; font-size:14px; font-weight:700; z-index:200; opacity:0; transition:opacity .3s; pointer-events:none;
+  }
+  .toast.show{opacity:1;}
+
+  /* ---- view (detail) sheet ---- */
+  .view-topbar{display:flex; justify-content:space-between; margin-bottom:8px;}
+  .view-hero{text-align:center; margin:6px 0 14px;}
+  .ring-wrap-lg{position:relative; width:96px; height:96px; margin:0 auto 10px; font-size:36px;}
+  .ring-wrap-lg svg{position:absolute; inset:0;}
+  .ring-wrap-lg svg circle:last-child{transform:rotate(-90deg); transform-origin:50% 50%;}
+  .ring-wrap-lg .icon-inner{position:absolute; inset:0; display:flex; align-items:center; justify-content:center;}
+  .view-hero h2{margin:4px 0;}
+  .view-hero .card-meta{justify-content:center;}
+  .done-btn-lg{
+    width:100%; background:var(--amber); color:#1F1B2E; border:none; padding:14px; border-radius:16px;
+    font-family:'Tajawal'; font-weight:700; font-size:16px; margin:6px 0 10px; cursor:pointer;
+  }
+  .done-btn-lg.checked{background:var(--sage);}
+  .font-toolbar{display:flex; align-items:center; gap:8px; flex-wrap:wrap; margin-bottom:10px;}
+  .tool-btn{
+    background:var(--surface); border:1px solid var(--surface-2); color:var(--text-dim);
+    padding:8px 12px; border-radius:12px; font-family:'Tajawal'; font-size:13px; cursor:pointer;
+  }
+  .tool-btn.active{border-color:var(--amber); color:var(--amber);}
+  .tool-btn.wide{width:100%; margin-bottom:14px; text-align:center; padding:11px;}
+  .swatches{display:flex; gap:6px;}
+  .swatch{width:22px; height:22px; border-radius:50%; border:2px solid transparent; cursor:pointer;}
+  .swatch.selected{border-color:var(--text);}
+  .view-text-box{background:linear-gradient(160deg, var(--surface), var(--surface-2)); border-radius:16px; padding:18px; border:1px solid rgba(217,164,65,0.15);}
+  .view-text-box #viewDhikrText{font-family:'Aref Ruqaa',serif; line-height:2; text-align:center; white-space:pre-wrap; margin:0;}
+  .view-text-box .dexplain{margin-top:12px; font-size:13.5px; color:var(--text-dim); line-height:1.8; text-align:center;}
+  .memorize-nav{display:flex; align-items:center; justify-content:space-between; margin-top:10px;}
+  .memorize-nav span{font-size:13px; color:var(--text-dim);}
+
+  /* ---- calendar / history modal ---- */
+  .calendar-header{display:flex; align-items:center; justify-content:space-between; margin-bottom:14px;}
+  .calendar-header h2{font-size:19px; margin:0;}
+  .calendar-weekdays{display:grid; grid-template-columns:repeat(7,1fr); gap:6px; margin-bottom:6px;}
+  .calendar-weekdays span{text-align:center; font-size:11.5px; color:var(--text-dim);}
+  .calendar-grid{display:grid; grid-template-columns:repeat(7,1fr); gap:6px;}
+  .cal-day{
+    aspect-ratio:1; display:flex; align-items:center; justify-content:center; border-radius:10px;
+    background:var(--surface); font-size:13px; cursor:pointer; border:1px solid var(--surface-2);
+  }
+  .cal-day.done{background:var(--amber); color:#1F1B2E; font-weight:700; border-color:var(--amber);}
+  .cal-day.disabled{opacity:0.25; cursor:not-allowed;}
+  .cal-day.today{border-color:var(--amber); border-width:2px;}
+</style>
+</head>
+<body>
+
+<header>
+  <button class="icon-btn about-btn" id="aboutBtn" aria-label="حول التطبيق">ℹ️</button>
+  <h1 class="title">أنس فاطمة</h1>
+  <p class="subtitle">أذكارك وأدعيتك، خطوة كل يوم</p>
+</header>
+
+<div class="sort-bar">
+  <span class="count-pill" id="countPill"></span>
+  <button class="sort-btn" id="sortBtn">↕ <span id="sortLabel">الأقرب انتهاءً</span></button>
+</div>
+
+<main id="list"></main>
+
+<button class="fab" id="fabAdd" aria-label="إضافة التزام">+</button>
+
+<!-- ---- detail / view sheet ---- -->
+<div class="sheet-backdrop" id="viewBackdrop">
+  <div class="sheet">
+    <div class="view-topbar">
+      <button class="icon-btn" id="viewEditBtn" aria-label="تعديل">✏️</button>
+      <button class="icon-btn" id="viewCloseBtn" aria-label="إغلاق">✕</button>
+    </div>
+    <div class="view-hero">
+      <div class="ring-wrap-lg" id="viewRingWrap"></div>
+      <h2 id="viewName"></h2>
+      <div class="card-meta" id="viewMeta"></div>
+    </div>
+    <button class="done-btn-lg" id="viewDoneBtn">تم اليوم</button>
+    <button class="tool-btn wide" id="openCalendarBtn">📅 سجل الأيام وتأشير الفائت</button>
+
+    <div id="viewTextSection" style="display:none;">
+      <div class="font-toolbar">
+        <button class="tool-btn" id="fontMinus">A-</button>
+        <button class="tool-btn" id="fontPlus">A+</button>
+        <span class="swatches" id="swatches">
+          <span class="swatch" data-color="#D9A441" style="background:#D9A441"></span>
+          <span class="swatch" data-color="#F2E9DC" style="background:#F2E9DC"></span>
+          <span class="swatch" data-color="#8FAE8B" style="background:#8FAE8B"></span>
+          <span class="swatch" data-color="#D9748C" style="background:#D9748C"></span>
+        </span>
+        <button class="tool-btn" id="memorizeBtn">📑 وضع الحفظ</button>
+      </div>
+      <div class="view-text-box">
+        <p id="viewDhikrText"></p>
+        <p id="viewDhikrExplain" class="dexplain"></p>
+      </div>
+      <div class="memorize-nav" id="memorizeNav" style="display:none;">
+        <button class="tool-btn" id="prevSeg">◀ السابق</button>
+        <span id="segCounter"></span>
+        <button class="tool-btn" id="nextSeg">التالي ▶</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ---- calendar / history sheet ---- -->
+<div class="sheet-backdrop" id="calendarBackdrop">
+  <div class="sheet">
+    <div class="calendar-header">
+      <button class="icon-btn" id="calPrev">‹</button>
+      <h2 id="calendarMonthLabel"></h2>
+      <button class="icon-btn" id="calNext">›</button>
+    </div>
+    <div class="calendar-weekdays">
+      <span>أحد</span><span>اثنين</span><span>ثلاثاء</span><span>أربعاء</span><span>خميس</span><span>جمعة</span><span>سبت</span>
+    </div>
+    <div class="calendar-grid" id="calendarGrid"></div>
+    <p style="font-size:12px; color:var(--text-dim); text-align:center; margin-top:14px;">اضغط على أي يوم فائت لتأشيره أو إلغاء تأشيره</p>
+    <button class="sheet-cancel" id="calendarCloseBtn">إغلاق</button>
+  </div>
+</div>
+
+<!-- ---- about modal ---- -->
+<div class="sheet-backdrop" id="aboutBackdrop">
+  <div class="sheet" style="text-align:center;">
+    <h2>حول التطبيق</h2>
+    <p style="color:var(--text-dim); font-size:14.5px; line-height:2; text-align:right;">
+      "أنس فاطمة" تطبيق بسيط يرافقك في أذكارك وأدعيتك اليومية، بجدولة مرنة (يوميًا، أسبوعيًا، أو حسب بداية/نهاية الشهر الهجري)، مع إمكانية حفظ نص الذكر وسبب مشروعيته أو ثوابه، ووضع خاص للحفظ يعرض المقاطع والآيات تباعًا، وسجل تقويمي لتأشير الأيام الفائتة التي تُنسى.
+    </p>
+    <div style="background:linear-gradient(160deg, var(--surface), var(--surface-2)); border-radius:16px; padding:18px; margin:16px 0; border:1px solid rgba(217,164,65,0.2);">
+      <p style="font-family:'Aref Ruqaa',serif; color:var(--amber); font-size:16.5px; line-height:2.1; text-align:center; margin:0;">
+        هذا البرنامج على روح الشهيدة فاطمة الزهراء سعد من بلدة بنت جبيل، التي ارتقت شهيدة مع جميع أفراد أسرتها.
+        <br><br>
+        كانت توصي دائمًا بالالتزام بالحجاب، وألا ينسى الناس دماء الشهداء.
+      </p>
+    </div>
+    <p style="color:var(--text-dim); font-size:13px; line-height:1.9; text-align:right;">
+      جميع بياناتك تُحفظ على جهازك فقط ولا تُرسل إلى أي مكان آخر.
+    </p>
+    <button class="sheet-cancel" id="aboutCloseBtn">إغلاق</button>
+  </div>
+</div>
+
+<!-- ---- add / edit sheet ---- -->
+<div class="sheet-backdrop" id="sheetBackdrop">
+  <div class="sheet">
+    <div class="sheet-handle"></div>
+    <h2 id="sheetTitle">التزام جديد</h2>
+
+    <label>اسم الالتزام</label>
+    <input type="text" id="inName" placeholder="مثلاً: أذكار الصباح" maxlength="60">
+
+    <label>التكرار</label>
+    <div class="seg" id="freqSeg">
+      <div class="seg-btn selected" data-freq="daily">يومي</div>
+      <div class="seg-btn" data-freq="weekly">أسبوعي</div>
+      <div class="seg-btn" data-freq="monthly">شهري هجري</div>
+    </div>
+
+    <div id="weeklyField" style="display:none;">
+      <label>يوم الأسبوع</label>
+      <select id="inDayOfWeek">
+        <option value="0">الأحد</option>
+        <option value="1">الاثنين</option>
+        <option value="2">الثلاثاء</option>
+        <option value="3">الأربعاء</option>
+        <option value="4">الخميس</option>
+        <option value="5">الجمعة</option>
+        <option value="6">السبت</option>
+      </select>
+    </div>
+
+    <div id="monthlyField" style="display:none;">
+      <label>موعد الشهر الهجري</label>
+      <div class="seg" id="monthlySeg">
+        <div class="seg-btn selected" data-monthly="monthly-start">بداية الشهر</div>
+        <div class="seg-btn" data-monthly="monthly-end">نهاية الشهر</div>
+      </div>
+    </div>
+
+    <label>عدد المرات المستهدفة</label>
+    <input type="number" id="inDays" placeholder="مثلاً: 40" min="1" max="1000">
+
+    <label>نص الذكر أو الدعاء (اختياري)</label>
+    <textarea id="inText" placeholder="ضع كل آية أو مقطع في سطر منفصل، ليعمل وضع الحفظ بالتنقل بينها"></textarea>
+
+    <label>سبب هذا الذكر أو ثوابه (اختياري)</label>
+    <textarea id="inExplain" placeholder="مثلاً: فضل هذا الذكر ولمن يُستحب..."></textarea>
+
+    <label>وقت التذكير اليومي (اختياري)</label>
+    <input type="time" id="inTime">
+
+    <label>اختر أيقونة</label>
+    <div class="icon-grid" id="iconGrid"></div>
+
+    <button class="sheet-save" id="saveBtn">حفظ الالتزام</button>
+    <button class="sheet-cancel" id="cancelBtn">إلغاء</button>
+    <button class="sheet-cancel" id="deleteBtn" style="display:none; color:var(--danger);">حذف هذا الالتزام</button>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<div class="sheet-backdrop" id="confirmOverlay" style="z-index:200; align-items:center; justify-content:center;">
+  <div class="sheet" style="max-width:320px; border-radius:20px; text-align:center;">
+    <p id="confirmMsg" style="font-size:16px; margin:6px 0 20px;"></p>
+    <button class="sheet-save" id="confirmYes" style="background:var(--danger); margin-top:0;">نعم، احذف</button>
+    <button class="sheet-cancel" id="confirmNo">إلغاء</button>
+  </div>
+</div>
+
+<script>
+const ICONS = ['🕌','📿','🤲','🌅','🌙','🕋','✍️','🧘‍♂️','💧','🎯','🧠','🏃‍♂️','💪','🎨','🥗','🛌','🚭','📵','🧹','⭐'];
+const STORE_KEY = 'anasfatima_commitments_v1';
+const SORT_KEY = 'anasfatima_sort_v1';
+const WEEKDAYS = ['الأحد','الاثنين','الثلاثاء','الأربعاء','الخميس','الجمعة','السبت'];
+const MONTH_NAMES = ['يناير','فبراير','مارس','أبريل','مايو','يونيو','يوليو','أغسطس','سبتمبر','أكتوبر','نوفمبر','ديسمبر'];
+
+let state = JSON.parse(localStorage.getItem(STORE_KEY) || '[]');
+let sortDir = localStorage.getItem(SORT_KEY) || 'asc';
+let selectedIcon = ICONS[0];
+let currentViewId = null;
+let memorizing = false;
+let segIndex = 0;
+let segments = [];
+let calendarMonthDate = null;
+
+// ---- migrate legacy commitment shape ----
+state.forEach(c=>{
+  if(!c.type) c.type = 'dhikr';
+  if(!c.frequency) c.frequency = 'daily';
+  if(c.text===undefined) c.text = '';
+  if(c.explanation===undefined) c.explanation = '';
+  if(c.fontSize===undefined) c.fontSize = 19;
+  if(c.fontColor===undefined) c.fontColor = '#D9A441';
+});
+save();
+
+function save(){ localStorage.setItem(STORE_KEY, JSON.stringify(state)); }
+function todayStr(){ return new Date().toISOString().slice(0,10); }
+function dateStr(d){ return d.toISOString().slice(0,10); }
+
+// ---- Hijri calendar helpers (for weekly/monthly scheduling) ----
+function getHijri(date){
+  try{
+    const fmt = new Intl.DateTimeFormat('en-US-u-ca-islamic-umalqura',{day:'numeric',month:'numeric',year:'numeric'});
+    const parts = fmt.formatToParts(date);
+    const o={};
+    parts.forEach(p=>{ if(p.type==='day') o.day=parseInt(p.value); if(p.type==='month') o.month=parseInt(p.value); if(p.type==='year') o.year=parseInt(p.value); });
+    if(o.day) return o;
+  }catch(e){}
+  const fmt = new Intl.DateTimeFormat('en-US-u-ca-islamic',{day:'numeric',month:'numeric',year:'numeric'});
+  const parts = fmt.formatToParts(date);
+  const o={};
+  parts.forEach(p=>{ if(p.type==='day') o.day=parseInt(p.value); if(p.type==='month') o.month=parseInt(p.value); if(p.type==='year') o.year=parseInt(p.value); });
+  return o;
+}
+function isHijriMonthStart(date){ return getHijri(date).day===1; }
+function isHijriMonthEnd(date){
+  const t=new Date(date); t.setDate(t.getDate()+1);
+  return getHijri(t).day===1;
+}
+function isDueOn(c, date){
+  switch(c.frequency){
+    case 'weekly': return date.getDay()===c.dayOfWeek;
+    case 'monthly-start': return isHijriMonthStart(date);
+    case 'monthly-end': return isHijriMonthEnd(date);
+    default: return true;
+  }
+}
+function isDueToday(c){ return isDueOn(c, new Date(todayStr()+'T00:00:00')); }
+
+function freqLabel(c){
+  switch(c.frequency){
+    case 'weekly': return 'كل '+WEEKDAYS[c.dayOfWeek];
+    case 'monthly-start': return 'بداية كل شهر هجري';
+    case 'monthly-end': return 'نهاية كل شهر هجري';
+    default: return 'يوميًا';
+  }
+}
+
+function getProgress(c){
+  const completed = c.completedDates.length;
+  const target = c.targetDays;
+  return {
+    completed, target,
+    remaining: Math.max(target - completed, 0),
+    pct: Math.min(100, Math.round((completed / target) * 100))
+  };
+}
+
+function calcStreak(c){
+  if(c.frequency==='daily'){
+    let streak = 0;
+    let d = new Date(todayStr()+'T00:00:00');
+    const doneToday = c.completedDates.includes(todayStr());
+    if(!doneToday) d.setDate(d.getDate()-1);
+    while(true){
+      const ds = dateStr(d);
+      if(c.completedDates.includes(ds)){ streak++; d.setDate(d.getDate()-1); }
+      else break;
+    }
+    return streak;
+  }
+  let d = new Date(todayStr()+'T00:00:00');
+  if(isDueOn(c,d) && !c.completedDates.includes(dateStr(d))) d.setDate(d.getDate()-1);
+  let streak = 0, guard = 0;
+  const start = new Date(c.startDate+'T00:00:00');
+  while(guard < 2000){
+    guard++;
+    if(d < start) break;
+    if(isDueOn(c,d)){
+      const ds = dateStr(d);
+      if(c.completedDates.includes(ds)){ streak++; d.setDate(d.getDate()-1); }
+      else break;
+    } else {
+      d.setDate(d.getDate()-1);
+    }
+  }
+  return streak;
+}
+
+function ringSVG(size, stroke, pct, achieved){
+  const r = (size-stroke)/2;
+  const circ = 2*Math.PI*r;
+  const offset = circ - (pct/100)*circ;
+  return `<svg width="${size}" height="${size}">
+    <circle cx="${size/2}" cy="${size/2}" r="${r}" stroke="var(--ring-track)" stroke-width="${stroke}" fill="none"/>
+    <circle cx="${size/2}" cy="${size/2}" r="${r}" stroke="${achieved?'var(--sage)':'var(--amber)'}" stroke-width="${stroke}" fill="none"
+      stroke-dasharray="${circ}" stroke-dashoffset="${offset}" stroke-linecap="round"/>
+  </svg>`;
+}
+
+// ---- about modal ----
+const aboutBackdrop = document.getElementById('aboutBackdrop');
+document.getElementById('aboutBtn').onclick = ()=> aboutBackdrop.classList.add('open');
+document.getElementById('aboutCloseBtn').onclick = ()=> aboutBackdrop.classList.remove('open');
+aboutBackdrop.onclick = (e)=>{ if(e.target===aboutBackdrop) aboutBackdrop.classList.remove('open'); };
+
+// ---- list rendering ----
+function render(){
+  const list = document.getElementById('list');
+  const countPill = document.getElementById('countPill');
+  document.getElementById('sortLabel').textContent = sortDir==='asc' ? 'الأقرب انتهاءً' : 'الأبعد انتهاءً';
+
+  if(state.length===0){
+    countPill.textContent = '';
+    list.innerHTML = `<div class="empty-state">
+      <span class="glyph">🕊️</span>
+      <div class="display">لا التزامات بعد</div>
+      <div>اضغط + لتبدأ أول ذكر أو دعاء</div>
+    </div>`;
+    return;
+  }
+  countPill.textContent = `${state.length} التزام`;
+
+  const items = [...state].sort((a,b)=>{
+    const remA = getProgress(a).remaining;
+    const remB = getProgress(b).remaining;
+    return sortDir==='asc' ? remA-remB : remB-remA;
+  });
+
+  list.innerHTML = items.map(c=>{
+    const prog = getProgress(c);
+    const doneToday = c.completedDates.includes(todayStr());
+    const streak = calcStreak(c);
+    const achieved = prog.completed >= prog.target;
+    const due = isDueToday(c);
+
+    return `<div class="card ${doneToday?'done-today':''} ${achieved?'achieved':''}" data-id="${c.id}">
+      ${achieved?'<div class="badge-achieved">اكتمل 🎉</div>':''}
+      <div class="ring-wrap" onclick="openView('${c.id}')">
+        ${ringSVG(66,6,prog.pct,achieved)}
+        <div class="ring-icon">${c.icon}</div>
+      </div>
+      <div class="card-body" onclick="openView('${c.id}')">
+        <p class="card-name">${c.name}</p>
+        <div class="card-meta">
+          <span>${prog.completed} من ${prog.target}</span>
+          <span class="remaining">${achieved? 'تم بالكامل' : 'باقي '+prog.remaining}</span>
+          ${streak>0?`<span class="streak">🔥 ${streak}</span>`:''}
+          <span class="freq-pill">${freqLabel(c)}</span>
+        </div>
+      </div>
+      <button class="done-btn ${doneToday?'checked':''} ${(!due && !doneToday)?'not-due':''}" onclick="event.stopPropagation(); toggleToday('${c.id}')">${doneToday?'✓':''}</button>
+    </div>`;
+  }).join('');
+}
+
+function toggleToday(id){
+  const c = state.find(x=>x.id===id);
+  if(!c) return;
+  const t = todayStr();
+  const idx = c.completedDates.indexOf(t);
+  if(idx>=0){
+    c.completedDates.splice(idx,1);
+  } else {
+    if(!isDueToday(c)){
+      showToast('اليوم ليس موعد الأداء المجدول لهذا الالتزام');
+      return;
+    }
+    c.completedDates.push(t);
+    const prog = getProgress(c);
+    if(prog.completed >= prog.target) showToast('🎉 مبارك! أكملت التزامك: '+c.name);
+    else showToast('أحسنت! تم تسجيل اليوم ✓');
+  }
+  save();
+  render();
+  if(currentViewId===id) refreshView();
+}
+
+function showToast(msg){
+  const el = document.getElementById('toast');
+  el.textContent = msg;
+  el.classList.add('show');
+  setTimeout(()=>el.classList.remove('show'), 2200);
+}
+function askConfirm(msg, onYes){
+  const overlay = document.getElementById('confirmOverlay');
+  document.getElementById('confirmMsg').textContent = msg;
+  overlay.classList.add('open');
+  const yesBtn = document.getElementById('confirmYes');
+  const noBtn = document.getElementById('confirmNo');
+  const cleanup = ()=>{ overlay.classList.remove('open'); yesBtn.onclick=null; noBtn.onclick=null; };
+  yesBtn.onclick = ()=>{ cleanup(); onYes(); };
+  noBtn.onclick = cleanup;
+}
+
+// ---- view (detail) sheet ----
+const viewBackdrop = document.getElementById('viewBackdrop');
+
+function openView(id){
+  const c = state.find(x=>x.id===id);
+  if(!c) return;
+  currentViewId = id;
+  memorizing = false;
+  refreshView();
+  viewBackdrop.classList.add('open');
+}
+function refreshView(){
+  const c = state.find(x=>x.id===currentViewId);
+  if(!c) return;
+  const prog = getProgress(c);
+  const achieved = prog.completed >= prog.target;
+
+  document.getElementById('viewRingWrap').innerHTML = ringSVG(96,8,prog.pct,achieved) + `<div class="icon-inner">${c.icon}</div>`;
+  document.getElementById('viewName').textContent = c.name;
+
+  const streak = calcStreak(c);
+  document.getElementById('viewMeta').innerHTML = `
+    <span>${prog.completed} من ${prog.target}</span>
+    <span class="remaining">${achieved?'تم بالكامل':'باقي '+prog.remaining}</span>
+    ${streak>0?`<span class="streak">🔥 ${streak}</span>`:''}
+    <span class="freq-pill">${freqLabel(c)}</span>`;
+
+  const doneToday = c.completedDates.includes(todayStr());
+  const doneBtn = document.getElementById('viewDoneBtn');
+  doneBtn.classList.toggle('checked', doneToday);
+  doneBtn.textContent = doneToday ? '✓ تم اليوم' : 'تم اليوم';
+
+  const hasText = (c.text && c.text.trim()) || (c.explanation && c.explanation.trim());
+  document.getElementById('viewTextSection').style.display = hasText ? 'block' : 'none';
+  if(hasText) renderViewText();
+}
+
+document.getElementById('viewCloseBtn').onclick = ()=> viewBackdrop.classList.remove('open');
+viewBackdrop.onclick = (e)=>{ if(e.target===viewBackdrop) viewBackdrop.classList.remove('open'); };
+document.getElementById('viewDoneBtn').onclick = ()=> toggleToday(currentViewId);
+document.getElementById('viewEditBtn').onclick = ()=>{
+  viewBackdrop.classList.remove('open');
+  openEditForm(currentViewId);
+};
+
+// -- font size / color --
+function applyFontStyle(){
+  const c = state.find(x=>x.id===currentViewId);
+  if(!c) return;
+  const textEl = document.getElementById('viewDhikrText');
+  textEl.style.fontSize = (c.fontSize||19)+'px';
+  textEl.style.color = c.fontColor || '#D9A441';
+  [...document.querySelectorAll('#swatches .swatch')].forEach(s=>{
+    s.classList.toggle('selected', s.dataset.color === (c.fontColor||'#D9A441'));
+  });
+}
+document.getElementById('fontMinus').onclick = ()=>{
+  const c = state.find(x=>x.id===currentViewId); if(!c) return;
+  c.fontSize = Math.max(14, (c.fontSize||19)-2);
+  save(); applyFontStyle();
+};
+document.getElementById('fontPlus').onclick = ()=>{
+  const c = state.find(x=>x.id===currentViewId); if(!c) return;
+  c.fontSize = Math.min(36, (c.fontSize||19)+2);
+  save(); applyFontStyle();
+};
+document.getElementById('swatches').onclick = (e)=>{
+  const sw = e.target.closest('.swatch');
+  if(!sw) return;
+  const c = state.find(x=>x.id===currentViewId); if(!c) return;
+  c.fontColor = sw.dataset.color;
+  save(); applyFontStyle();
+};
+
+// -- memorization mode --
+function buildSegments(text){
+  return (text||'').split('\n').map(s=>s.trim()).filter(Boolean);
+}
+document.getElementById('memorizeBtn').onclick = ()=>{
+  const c = state.find(x=>x.id===currentViewId); if(!c) return;
+  if(!memorizing){
+    segments = buildSegments(c.text);
+    if(segments.length===0){ showToast('لا يوجد نص لعرضه في وضع الحفظ'); return; }
+    segIndex = 0;
+    memorizing = true;
+  } else {
+    memorizing = false;
+  }
+  renderViewText();
+};
+document.getElementById('prevSeg').onclick = ()=>{ if(segIndex>0){ segIndex--; renderViewText(); } };
+document.getElementById('nextSeg').onclick = ()=>{ if(segIndex<segments.length-1){ segIndex++; renderViewText(); } };
+
+function renderViewText(){
+  const c = state.find(x=>x.id===currentViewId); if(!c) return;
+  const textEl = document.getElementById('viewDhikrText');
+  const explainEl = document.getElementById('viewDhikrExplain');
+  const navEl = document.getElementById('memorizeNav');
+  const memBtn = document.getElementById('memorizeBtn');
+  memBtn.classList.toggle('active', memorizing);
+
+  if(memorizing){
+    textEl.textContent = segments[segIndex];
+    navEl.style.display = 'flex';
+    document.getElementById('segCounter').textContent = (segIndex+1)+' / '+segments.length;
+    document.getElementById('prevSeg').style.visibility = segIndex===0 ? 'hidden' : 'visible';
+    document.getElementById('nextSeg').style.visibility = segIndex===segments.length-1 ? 'hidden' : 'visible';
+    explainEl.style.display = 'none';
+  } else {
+    textEl.textContent = c.text || '';
+    navEl.style.display = 'none';
+    if(c.explanation && c.explanation.trim()){
+      explainEl.style.display = 'block';
+      explainEl.textContent = c.explanation;
+    } else {
+      explainEl.style.display = 'none';
+    }
+  }
+  applyFontStyle();
+}
+
+// ---- calendar / history ----
+const calendarBackdrop = document.getElementById('calendarBackdrop');
+document.getElementById('openCalendarBtn').onclick = openCalendar;
+document.getElementById('calendarCloseBtn').onclick = ()=> calendarBackdrop.classList.remove('open');
+calendarBackdrop.onclick = (e)=>{ if(e.target===calendarBackdrop) calendarBackdrop.classList.remove('open'); };
+document.getElementById('calPrev').onclick = ()=> shiftCalendarMonth(-1);
+document.getElementById('calNext').onclick = ()=> shiftCalendarMonth(1);
+
+function openCalendar(){
+  const c = state.find(x=>x.id===currentViewId); if(!c) return;
+  const today = new Date(); today.setHours(0,0,0,0);
+  calendarMonthDate = new Date(today.getFullYear(), today.getMonth(), 1);
+  renderCalendar();
+  calendarBackdrop.classList.add('open');
+}
+function shiftCalendarMonth(delta){
+  calendarMonthDate.setMonth(calendarMonthDate.getMonth()+delta);
+  renderCalendar();
+}
+function renderCalendar(){
+  const c = state.find(x=>x.id===currentViewId); if(!c) return;
+  const year = calendarMonthDate.getFullYear();
+  const month = calendarMonthDate.getMonth();
+  document.getElementById('calendarMonthLabel').textContent = MONTH_NAMES[month]+' '+year;
+
+  const firstDay = new Date(year, month, 1);
+  const startWeekday = firstDay.getDay();
+  const daysInMonth = new Date(year, month+1, 0).getDate();
+  const today = new Date(); today.setHours(0,0,0,0);
+
+  let html = '';
+  for(let i=0;i<startWeekday;i++) html += `<div></div>`;
+  for(let d=1; d<=daysInMonth; d++){
+    const dateObj = new Date(year, month, d);
+    const ds = dateStr(dateObj);
+    const isFuture = dateObj > today;
+    const isDone = c.completedDates.includes(ds);
+    const due = isDueOn(c, dateObj);
+    const isToday = ds===todayStr();
+    let cls = 'cal-day';
+    if(isDone) cls += ' done';
+    if(isFuture || !due) cls += ' disabled';
+    if(isToday) cls += ' today';
+    html += `<div class="${cls}" ${(!isFuture && due)?`onclick="toggleCalendarDay('${ds}')"`:''}>${d}</div>`;
+  }
+  document.getElementById('calendarGrid').innerHTML = html;
+}
+function toggleCalendarDay(ds){
+  const c = state.find(x=>x.id===currentViewId); if(!c) return;
+  const idx = c.completedDates.indexOf(ds);
+  if(idx>=0) c.completedDates.splice(idx,1);
+  else c.completedDates.push(ds);
+  save();
+  renderCalendar();
+  render();
+  refreshView();
+}
+
+// ---- add / edit sheet ----
+const backdrop = document.getElementById('sheetBackdrop');
+const iconGrid = document.getElementById('iconGrid');
+let editId = null;
+let currentFreq = 'daily';
+let currentMonthly = 'monthly-start';
+
+const freqSeg = document.getElementById('freqSeg');
+const monthlySeg = document.getElementById('monthlySeg');
+const weeklyField = document.getElementById('weeklyField');
+const monthlyField = document.getElementById('monthlyField');
+
+function buildIconGrid(){
+  iconGrid.innerHTML = ICONS.map(ic=>
+    `<div class="icon-opt ${ic===selectedIcon?'selected':''}" data-icon="${ic}">${ic}</div>`
+  ).join('');
+  [...iconGrid.children].forEach(el=>{
+    el.onclick = ()=>{ selectedIcon = el.dataset.icon; buildIconGrid(); };
+  });
+}
+function applyFreqUI(){
+  [...freqSeg.children].forEach(b=> b.classList.toggle('selected', b.dataset.freq===currentFreq));
+  weeklyField.style.display = currentFreq==='weekly' ? 'block' : 'none';
+  monthlyField.style.display = currentFreq==='monthly' ? 'block' : 'none';
+}
+[...freqSeg.children].forEach(b=>{ b.onclick = ()=>{ currentFreq = b.dataset.freq; applyFreqUI(); }; });
+[...monthlySeg.children].forEach(b=>{
+  b.onclick = ()=>{
+    currentMonthly = b.dataset.monthly;
+    [...monthlySeg.children].forEach(x=> x.classList.toggle('selected', x===b));
+  };
+});
+
+function openAddSheet(){
+  editId = null;
+  document.getElementById('sheetTitle').textContent = 'التزام جديد';
+  document.getElementById('saveBtn').textContent = 'حفظ الالتزام';
+  document.getElementById('deleteBtn').style.display = 'none';
+
+  document.getElementById('inName').value='';
+  document.getElementById('inDays').value='';
+  document.getElementById('inTime').value='';
+  document.getElementById('inText').value='';
+  document.getElementById('inExplain').value='';
+  document.getElementById('inDayOfWeek').value='0';
+
+  currentFreq='daily'; currentMonthly='monthly-start';
+  applyFreqUI();
+  [...monthlySeg.children].forEach(x=> x.classList.toggle('selected', x.dataset.monthly==='monthly-start'));
+
+  selectedIcon = ICONS[0];
+  buildIconGrid();
+  backdrop.classList.add('open');
+}
+
+function openEditForm(id){
+  const c = state.find(x=>x.id===id);
+  if(!c) return;
+  editId = id;
+  document.getElementById('sheetTitle').textContent = 'تعديل الالتزام';
+  document.getElementById('saveBtn').textContent = 'حفظ التعديلات';
+  document.getElementById('deleteBtn').style.display = 'block';
+
+  document.getElementById('inName').value = c.name;
+  document.getElementById('inTime').value = c.reminderTime || '';
+  document.getElementById('inDays').value = c.targetDays;
+  document.getElementById('inText').value = c.text || '';
+  document.getElementById('inExplain').value = c.explanation || '';
+
+  if(c.frequency==='weekly'){
+    currentFreq='weekly';
+    document.getElementById('inDayOfWeek').value = String(c.dayOfWeek||0);
+  } else if(c.frequency==='monthly-start' || c.frequency==='monthly-end'){
+    currentFreq='monthly';
+    currentMonthly = c.frequency;
+    [...monthlySeg.children].forEach(x=> x.classList.toggle('selected', x.dataset.monthly===c.frequency));
+  } else {
+    currentFreq='daily';
+  }
+  applyFreqUI();
+
+  selectedIcon = c.icon;
+  buildIconGrid();
+  backdrop.classList.add('open');
+}
+
+document.getElementById('fabAdd').onclick = openAddSheet;
+document.getElementById('cancelBtn').onclick = ()=> backdrop.classList.remove('open');
+backdrop.onclick = (e)=>{ if(e.target===backdrop) backdrop.classList.remove('open'); };
+
+document.getElementById('saveBtn').onclick = ()=>{
+  const name = document.getElementById('inName').value.trim();
+  const time = document.getElementById('inTime').value;
+  if(!name){ showToast('اكتب اسم الالتزام'); return; }
+
+  const days = parseInt(document.getElementById('inDays').value);
+  if(!days || days<1){ showToast('أدخل عدد مرات مستهدف صحيح'); return; }
+  let frequency = 'daily';
+  let dayOfWeek = null;
+  if(currentFreq==='weekly'){
+    frequency = 'weekly';
+    dayOfWeek = parseInt(document.getElementById('inDayOfWeek').value);
+  } else if(currentFreq==='monthly'){
+    frequency = currentMonthly;
+  }
+  const payload = {
+    targetDays: days, frequency, dayOfWeek,
+    text: document.getElementById('inText').value.trim(),
+    explanation: document.getElementById('inExplain').value.trim()
+  };
+
+  if(editId){
+    const c = state.find(x=>x.id===editId);
+    Object.assign(c, payload, { name, icon: selectedIcon, reminderTime: time || null });
+  } else {
+    const c = Object.assign({
+      id: 'c'+Date.now(),
+      type:'dhikr',
+      name,
+      startDate: todayStr(),
+      completedDates: [],
+      icon: selectedIcon,
+      reminderTime: time || null,
+      fontSize: 19,
+      fontColor: '#D9A441'
+    }, payload);
+    state.push(c);
+  }
+  save();
+  backdrop.classList.remove('open');
+  render();
+  if(currentViewId===editId) refreshView();
+  if(time) requestNotifPermission();
+  scheduleReminders();
+};
+
+document.getElementById('deleteBtn').onclick = ()=>{
+  if(!editId) return;
+  askConfirm('هل تريد حذف هذا الالتزام؟', ()=>{
+    state = state.filter(x=>x.id!==editId);
+    save();
+    backdrop.classList.remove('open');
+    viewBackdrop.classList.remove('open');
+    render();
+  });
+};
+
+document.getElementById('sortBtn').onclick = ()=>{
+  sortDir = sortDir==='asc' ? 'desc' : 'asc';
+  localStorage.setItem(SORT_KEY, sortDir);
+  render();
+};
+
+// ---- reminders ----
+function requestNotifPermission(){
+  if('Notification' in window && Notification.permission==='default') Notification.requestPermission();
+}
+let reminderTimers = [];
+function scheduleReminders(){
+  reminderTimers.forEach(t=>clearTimeout(t));
+  reminderTimers = [];
+  if(!('Notification' in window) || Notification.permission!=='granted') return;
+  state.forEach(c=>{
+    if(!c.reminderTime) return;
+    const [h,m] = c.reminderTime.split(':').map(Number);
+    const now = new Date();
+    let target = new Date();
+    target.setHours(h,m,0,0);
+    if(target < now) target.setDate(target.getDate()+1);
+    const delay = target - now;
+    const timer = setTimeout(()=>{
+      if(!c.completedDates.includes(todayStr()) && isDueOn(c, new Date())){
+        new Notification('أنس فاطمة — تذكير', { body: `حان وقت: ${c.name}` });
+      }
+      scheduleReminders();
+    }, delay);
+    reminderTimers.push(timer);
+  });
+}
+document.addEventListener('visibilitychange', ()=>{ if(document.visibilityState==='visible') scheduleReminders(); });
+
+if('serviceWorker' in navigator){
+  window.addEventListener('load', ()=>{ navigator.serviceWorker.register('sw.js').catch(()=>{}); });
+}
+
+buildIconGrid();
+render();
+scheduleReminders();
+</script>
+</body>
+</html>
